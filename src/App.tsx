@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { productData } from "./interfaces";
-import MaterialTable, { Column } from "@material-table/core";
+import { Column } from "@material-table/core";
+const MaterialTable = require("@material-table/core").default;
 import Detailed from "./detailed";
 
 const columns: Array<Column<productData>> = [

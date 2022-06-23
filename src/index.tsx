@@ -3,7 +3,7 @@ import * as React from "react";
 
 import App from "./App";
 
-ReactDOM.createRoot(document.querySelector("#app")).render(
+ReactDOM.createRoot(document.querySelector("#app")!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
