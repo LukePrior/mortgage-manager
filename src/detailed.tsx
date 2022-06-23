@@ -33,7 +33,7 @@ export default function App(data: { data: productData }) {
 
       setDetailed(result);
     } catch (err) {
-      setErr(err.message);
+      setErr("Error loading");
     } finally {
       setIsLoading(false);
     }

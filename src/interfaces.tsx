@@ -2,7 +2,7 @@ interface rateData {
   rate: number;
   lendingRateType: string;
   repaymentType: string;
-  period?: number;
+  period: number;
 }
 
 interface productData {
