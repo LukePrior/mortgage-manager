@@ -19,16 +19,37 @@ export default function App() {
   const [loanPayment, setLoanPayment] = React.useState<string | null>(null);
   const [loanBig, setLoanBig] = React.useState<string | null>(null);
 
-  function sortTable(loanPeriod: string | null, loanPayment: string | null, loanBig: string | null) {
+  function sortTable(
+    loanPeriod: string | null,
+    loanPayment: string | null,
+    loanBig: string | null
+  ) {
     if (loanPeriod === null && loanPayment === null && loanBig === null) {
-      setData(store)
-      return
+      setData(store);
+      return;
     }
 
     let newData = store.filter((product: any) => {
       let flag = false;
       product.rate.forEach((rate: rateData, index: number) => {
-        if ((loanPeriod === null || (loanPeriod === "0" && rate.lendingRateType === "VARIABLE" && flag === false) || ("period" in rate && rate.period === parseInt(loanPeriod) * 12 && flag === false)) && (loanPayment === null || (loanPayment === "0" && rate.repaymentType === "PRINCIPAL_AND_INTEREST") || (loanPayment === "1" && rate.repaymentType === "INTEREST_ONLY")) && (loanBig === null || (loanBig === "0" && ["000002", "000004", "000006", "000008"].includes(product.brandId)))) {
+        if (
+          (loanPeriod === null ||
+            (loanPeriod === "0" &&
+              rate.lendingRateType === "VARIABLE" &&
+              flag === false) ||
+            ("period" in rate &&
+              rate.period === parseInt(loanPeriod) * 12 &&
+              flag === false)) &&
+          (loanPayment === null ||
+            (loanPayment === "0" &&
+              rate.repaymentType === "PRINCIPAL_AND_INTEREST") ||
+            (loanPayment === "1" && rate.repaymentType === "INTEREST_ONLY")) &&
+          (loanBig === null ||
+            (loanBig === "0" &&
+              ["000002", "000004", "000006", "000008"].includes(
+                product.brandId
+              )))
+        ) {
           product.i = index;
           flag = true;
         }
@@ -37,7 +58,7 @@ export default function App() {
     });
 
     setData(newData);
-  };
+  }
 
   const handleLoanPeriod = (
     event: React.MouseEvent<HTMLElement>,
@@ -75,9 +96,10 @@ export default function App() {
     {
       title: "Rate",
       field: "rate[0].rate",
+      customSort: (a, b) => a.rate[a.i].rate - b.rate[b.i].rate,
       render: (rowData) => {
         const handleChange = (event: SelectChangeEvent) => {
-          let newData = [...store];
+          let newData = [...data];
           let match: any = newData.find(function (row: any) {
             if (
               row.brandId === rowData.brandId &&
@@ -134,6 +156,11 @@ export default function App() {
     {
       title: "Type",
       field: "rate[0].lendingRateType",
+      customSort: (a, b) => {
+        if (!a.rate[a.i].hasOwnProperty("period")) a.rate[a.i].period = 0;
+        if (!b.rate[b.i].hasOwnProperty("period")) b.rate[b.i].period = 0;
+        return a.rate[a.i].period - b.rate[b.i].period;
+      },
       render: (rowData) => {
         if (rowData.rate[rowData.i].lendingRateType === "FIXED") {
           return <p>{rowData.rate[rowData.i].period / 12} YEAR</p>;
