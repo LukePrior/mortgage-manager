@@ -12,6 +12,7 @@ interface productData {
   productName: string;
   description: string;
   rate: rateData[];
+  i: number;
 }
 
-export { productData };
+export { productData, rateData };
