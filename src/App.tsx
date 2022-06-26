@@ -6,11 +6,22 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
-import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Grid from "@mui/material/Grid";
+import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
 
 const MaterialTable = require("@material-table/core").default;
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "light"
+  }
+});
 
 export default function App() {
   const [store, setStore] = useState([]);
@@ -18,6 +29,7 @@ export default function App() {
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(null);
   const [loanPayment, setLoanPayment] = React.useState<string | null>(null);
   const [loanBig, setLoanBig] = React.useState<string | null>(null);
+  const [value, setValue] = React.useState<number | string | null>(600000);
 
   function sortTable(
     loanPeriod: string | null,
@@ -154,6 +166,20 @@ export default function App() {
       }
     },
     {
+      title: "Amount",
+      field: "amount",
+      render: (rowData) => {
+        let i = rowData.rate[rowData.i].rate / 12 / 100;
+        let n = 300;
+        let p = value;
+        let r = Math.round((p * (i * (1 + i) ** n)) / ((1 + i) ** n - 1));
+        return <p>${r}</p>;
+      },
+      customSort: (a, b) => {
+        return a.rate[a.i].rate - b.rate[b.i].rate;
+      }
+    },
+    {
       title: "Type",
       field: "rate[0].lendingRateType",
       customSort: (a, b) => {
@@ -181,51 +207,77 @@ export default function App() {
     )
       .then((response) => response.json())
       .then((actualData) => {
-        actualData.forEach((o: any, i: number, a: any) => (a[i].i = 0));
+        actualData.forEach((o: any, i: number, a: any) => {
+          a[i].i = 0;
+        });
         setData(actualData);
         setStore(actualData);
       });
   }, []);
 
   return (
-    <div>
-      <ToggleButtonGroup
-        value={loanPeriod}
-        exclusive
-        onChange={handleLoanPeriod}
-        color="primary"
-      >
-        <ToggleButton value="0">Variable</ToggleButton>
-        <ToggleButton value="1">1 YR</ToggleButton>
-        <ToggleButton value="2">2 YR</ToggleButton>
-        <ToggleButton value="3">3 YR</ToggleButton>
-        <ToggleButton value="4">4 YR</ToggleButton>
-        <ToggleButton value="5">5 YR</ToggleButton>
-        <ToggleButton value="10">10 YR</ToggleButton>
-      </ToggleButtonGroup>
-      <ToggleButtonGroup
-        value={loanPayment}
-        exclusive
-        onChange={handleLoanPayment}
-        color="primary"
-      >
-        <ToggleButton value="0">Principle & Interest</ToggleButton>
-        <ToggleButton value="1">Interest Only</ToggleButton>
-      </ToggleButtonGroup>
-      <ToggleButtonGroup
-        value={loanBig}
-        exclusive
-        onChange={handleLoanBig}
-        color="primary"
-      >
-        <ToggleButton value="0">BIG 4</ToggleButton>
-      </ToggleButtonGroup>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Grid container justifyContent="center" spacing={1} sx={{ my: 1 }}>
+        <Grid item style={{ display: "flex" }}>
+          <ToggleButtonGroup
+            value={loanPeriod}
+            exclusive
+            onChange={handleLoanPeriod}
+            color="primary"
+          >
+            <ToggleButton value="0">Variable</ToggleButton>
+            <ToggleButton value="1">1 YR</ToggleButton>
+            <ToggleButton value="2">2 YR</ToggleButton>
+            <ToggleButton value="3">3 YR</ToggleButton>
+            <ToggleButton value="4">4 YR</ToggleButton>
+            <ToggleButton value="5">5 YR</ToggleButton>
+            <ToggleButton value="10">10 YR</ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+        <Grid item style={{ display: "flex" }}>
+          <ToggleButtonGroup
+            value={loanPayment}
+            exclusive
+            onChange={handleLoanPayment}
+            color="primary"
+          >
+            <ToggleButton value="0">Principle & Interest</ToggleButton>
+            <ToggleButton value="1">Interest Only</ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+        <Grid item style={{ display: "flex" }}>
+          <ToggleButtonGroup
+            value={loanBig}
+            exclusive
+            onChange={handleLoanBig}
+            color="primary"
+          >
+            <ToggleButton value="0">BIG 4</ToggleButton>
+          </ToggleButtonGroup>
+        </Grid>
+        <Grid item style={{ display: "flex" }}>
+          <FormControl>
+            <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
+            <OutlinedInput
+              type="number"
+              id="outlined-adornment-amount"
+              startAdornment={
+                <InputAdornment position="start">$</InputAdornment>
+              }
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              label="Amount"
+            />
+          </FormControl>
+        </Grid>
+      </Grid>
       <MaterialTable
         columns={columns}
         data={data}
         detailPanel={detailPanel}
         title="Home Loans"
       />
-    </div>
+    </ThemeProvider>
   );
 }
