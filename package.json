@@ -1,8 +1,8 @@
 {
-  "name": "home-loan-comparator",
+  "name": "mortgage-manager",
   "version": "1.0.0",
   "description": "",
-  "keywords": [],
+  "homepage": "https://lukeprior.github.io/mortgage-manager/",
   "main": "src/index.tsx",
   "dependencies": {
     "@emotion/react": "11.9.3",
