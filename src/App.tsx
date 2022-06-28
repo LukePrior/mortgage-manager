@@ -188,8 +188,10 @@ export default function App() {
         let i = rowData.rate[rowData.i].rate / 12 / 100;
         let n = 300;
         let p;
-        if (value === null || typeof value === "string") {
+        if (value === null) {
           p = 0;
+        } else if (typeof value === "string") {
+          p = parseFloat(value);
         } else {
           p = value;
         }

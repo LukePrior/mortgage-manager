@@ -5,12 +5,18 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Paper from "@mui/material/Paper";
 
 export default function App(data: { data: productData }) {
   const [detailed, setDetailed] = useState<any>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState("");
   const [value, setValue] = React.useState(0);
+  const [modal, setModal] = useState<any>({});
+  const [featureId, setFeature] = useState<number>(-1);
+  const [eligibilityId, setEligibility] = useState<number>(-1);
+  const [feeId, setFee] = useState<number>(-1);
+  const [rateId, setRate] = useState<number>(-1);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -57,8 +63,10 @@ export default function App(data: { data: productData }) {
   url += product.productId;
   url += ".json";
 
-  function printData(data: any) {
-    console.log(data);
+  function updateModal(field: string, index: number) {
+    let temp = modal;
+    temp[field] = index;
+    setModal(temp);
   }
 
   const Panel = () => (
@@ -89,69 +97,203 @@ export default function App(data: { data: productData }) {
           {detailed.data.hasOwnProperty("features") && (
             <Box>
               <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-                {detailed.data.features.map((feature: any) => {
+                {detailed.data.features.map((feature: any, index: number) => {
                   return (
                     <Chip
                       label={feature.featureType}
-                      variant="outlined"
-                      onClick={(event) => printData(JSON.stringify(feature))}
+                      variant={featureId === index ? "filled" : "outlined"}
+                      onClick={(event) =>
+                        setFeature(featureId === index ? -1 : index)
+                      }
                     />
                   );
                 })}
               </Stack>
+              {featureId !== -1 && (
+                <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
+                  <h3>{detailed.data.features[featureId].featureType}</h3>
+                  <p>{detailed.data.features[featureId].additionalValue}</p>
+                  <p>{detailed.data.features[featureId].additionalInfo}</p>
+                  <p>{detailed.data.features[featureId].additionalInfoUri}</p>
+                </Paper>
+              )}
             </Box>
           )}
         </TabPanel>
         <TabPanel value={value} index={2}>
           <h3>Eligibility</h3>
           {detailed.data.hasOwnProperty("eligibility") && (
-            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-              {detailed.data.eligibility.map((eligibility: any) => {
-                return (
-                  <Chip
-                    label={eligibility.eligibilityType}
-                    variant="outlined"
-                    onClick={(event) => printData(JSON.stringify(eligibility))}
-                  />
-                );
-              })}
-            </Stack>
+            <Box>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+                {detailed.data.eligibility.map(
+                  (eligibility: any, index: number) => {
+                    return (
+                      <Chip
+                        label={eligibility.eligibilityType}
+                        variant={
+                          eligibilityId === index ? "filled" : "outlined"
+                        }
+                        onClick={(event) =>
+                          setEligibility(eligibilityId === index ? -1 : index)
+                        }
+                      />
+                    );
+                  }
+                )}
+              </Stack>
+              {eligibilityId !== -1 && (
+                <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
+                  <h3>
+                    {detailed.data.eligibility[eligibilityId].eligibilityType}
+                  </h3>
+                  <p>
+                    {detailed.data.eligibility[eligibilityId].additionalValue}
+                  </p>
+                  <p>
+                    {detailed.data.eligibility[eligibilityId].additionalInfo}
+                  </p>
+                  <p>
+                    {detailed.data.eligibility[eligibilityId].additionalInfoUri}
+                  </p>
+                </Paper>
+              )}
+            </Box>
           )}
         </TabPanel>
         <TabPanel value={value} index={3}>
           <h3>Rates</h3>
           {detailed.data.hasOwnProperty("lendingRates") && (
-            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-              {detailed.data.lendingRates.map((rate: any) => {
-                return (
-                  <Chip
-                    label={
-                      Math.round(rate.rate * 10000) / 100 +
-                      "% - " +
-                      rate.lendingRateType
-                    }
-                    variant="outlined"
-                    onClick={(event) => printData(JSON.stringify(rate))}
-                  />
-                );
-              })}
-            </Stack>
+            <Box>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+                {detailed.data.lendingRates.map((rate: any, index: number) => {
+                  return (
+                    <Chip
+                      label={
+                        Math.round(rate.rate * 10000) / 100 +
+                        "% - " +
+                        rate.lendingRateType
+                      }
+                      variant={rateId === index ? "filled" : "outlined"}
+                      onClick={(event) =>
+                        setRate(rateId === index ? -1 : index)
+                      }
+                    />
+                  );
+                })}
+              </Stack>
+              {rateId !== -1 && (
+                <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
+                  <h3>{detailed.data.lendingRates[rateId].lendingRateType}</h3>
+                  <p>
+                    Rate:{" "}
+                    {Math.round(
+                      detailed.data.lendingRates[rateId].rate * 10000
+                    ) / 100}
+                    %
+                  </p>
+                  {detailed.data.lendingRates[rateId].comparisonRate && (
+                    <p>
+                      Comparison Rate:{" "}
+                      {Math.round(
+                        detailed.data.lendingRates[rateId].comparisonRate *
+                          10000
+                      ) / 100}
+                      %
+                    </p>
+                  )}
+                  <p>{detailed.data.lendingRates[rateId].additionalValue}</p>
+                  <p>{detailed.data.lendingRates[rateId].additionalInfo}</p>
+                  <p>{detailed.data.lendingRates[rateId].additionalInfoUri}</p>
+                  {detailed.data.lendingRates[rateId].tiers &&
+                    detailed.data.lendingRates[rateId].tiers.length > 0 && (
+                      <h4>Tiers</h4>
+                    )}
+                  {detailed.data.lendingRates[rateId].tiers &&
+                    detailed.data.lendingRates[rateId].tiers.length > 0 &&
+                    detailed.data.lendingRates[rateId].tiers.map(
+                      (tier: any) => {
+                        return (
+                          <Paper elevation={3} sx={{ mt: 1, p: 1 }}>
+                            <p>{tier.name}</p>
+                            <p>{tier.additionalInfo}</p>
+                            <p>
+                              {tier.unitOfMeasure}: {tier.minimumValue} -{" "}
+                              {tier.maximumValue}
+                            </p>
+                            {tier.applicabilityConditions &&
+                              tier.applicabilityConditions.additionalInfo && (
+                                <p>
+                                  {tier.applicabilityConditions.additionalInfo}
+                                </p>
+                              )}
+                            <p>{tier.additionalInfoUri}</p>
+                          </Paper>
+                        );
+                      }
+                    )}
+                </Paper>
+              )}
+            </Box>
           )}
         </TabPanel>
         <TabPanel value={value} index={4}>
           <h3>Fees</h3>
           {detailed.data.hasOwnProperty("fees") && (
-            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-              {detailed.data.fees.map((fee: any) => {
-                return (
-                  <Chip
-                    label={fee.name}
-                    variant="outlined"
-                    onClick={(event) => printData(JSON.stringify(fee))}
-                  />
-                );
-              })}
-            </Stack>
+            <Box>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+                {detailed.data.fees.map((fee: any, index: number) => {
+                  return (
+                    <Chip
+                      label={fee.name}
+                      variant={feeId === index ? "filled" : "outlined"}
+                      onClick={(event) => setFee(feeId === index ? -1 : index)}
+                    />
+                  );
+                })}
+              </Stack>
+              {feeId !== -1 && (
+                <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
+                  <h3>{detailed.data.fees[feeId].name}</h3>
+                  <p>{detailed.data.fees[feeId].feeType}</p>
+                  <p>{detailed.data.fees[feeId].additionalInfo}</p>
+                  {detailed.data.fees[feeId].amount && (
+                    <p>${detailed.data.fees[feeId].amount}</p>
+                  )}
+                  <p>{detailed.data.fees[feeId].additionalInfoUri}</p>
+                  {detailed.data.fees[feeId].discounts &&
+                    detailed.data.fees[feeId].discounts.length > 0 && (
+                      <h4>Discounts</h4>
+                    )}
+                  {detailed.data.fees[feeId].discounts &&
+                    detailed.data.fees[feeId].discounts.length > 0 &&
+                    detailed.data.fees[feeId].discounts.map((discount: any) => {
+                      return (
+                        <Paper elevation={3} sx={{ mt: 1, p: 1 }}>
+                          <p>Type: {discount.discountType}</p>
+                          <p>{discount.description}</p>
+                          <p>{discount.additionalInfo}</p>
+                          {discount.amount && <p>Save ${discount.amount}</p>}
+                          <p>{discount.additionalInfoUri}</p>
+                          {discount.eligibility && <h5>Eligability</h5>}
+                          {discount.eligibility &&
+                            discount.eligibility.map((eligability: any) => {
+                              return (
+                                <Paper elevation={4} sx={{ mt: 1, p: 1 }}>
+                                  <p>
+                                    Type: {eligability.discountEligibilityType}
+                                  </p>
+                                  <p>{eligability.additionalValue}</p>
+                                  <p>{eligability.additionalInfo}</p>
+                                  <p>{eligability.additionalInfoUri}</p>
+                                </Paper>
+                              );
+                            })}
+                        </Paper>
+                      );
+                    })}
+                </Paper>
+              )}
+            </Box>
           )}
         </TabPanel>
         <br></br>
