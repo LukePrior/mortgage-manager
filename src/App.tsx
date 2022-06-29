@@ -20,10 +20,12 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Stack from "@mui/material/Stack";
 
 export default function App() {
   const [store, setStore] = useState([]);
   const [data, setData] = useState([]);
+  const [images, setImages] = React.useState<any>({});
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>("0");
   const [loanPayment, setLoanPayment] = React.useState<string | null>("0");
   const [loanBig, setLoanBig] = React.useState<string | null>("0");
@@ -115,7 +117,29 @@ export default function App() {
       title: "Company",
       field: "brandName",
       render: (rowData) => {
-        return <b>{rowData.brandName}</b>;
+        let brand = rowData.brandId;
+        let imgUrl = images[brand].logoUrl;
+        return (
+          <Stack
+            direction="column"
+            spacing={1}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <b>{rowData.brandName}</b>
+            <div style={{ height: "5vh" }}>
+              <img
+                src={imgUrl}
+                alt="brand logo"
+                style={{
+                  height: "100%",
+                  maxWidth: "100%",
+                  objectFit: "contain"
+                }}
+              ></img>
+            </div>
+          </Stack>
+        );
       }
     },
     { title: "Product", field: "productName" },
@@ -154,14 +178,26 @@ export default function App() {
               }}
             >
               {data.map((rate: rateData, index: number) => {
-                let period = rate.lendingRateType;
-                if (period === "FIXED") {
-                  period = rate.period / 12 + " YEAR";
+                let period = rate.lendingRateType
+                  .toLowerCase()
+                  .replace(/_/g, " ")
+                  .replace(/(?: |\b)(\w)/g, function (key: string) {
+                    return key.toUpperCase();
+                  });
+                if (period === "Fixed") {
+                  period = rate.period / 12 + " Year";
                 }
                 return (
                   <MenuItem value={index}>
                     <ListItemText>
-                      {rate.rate}% {period} {rate.repaymentType}
+                      {rate.rate}% {period}{" "}
+                      {rate.repaymentType &&
+                        rate.repaymentType
+                          .toLowerCase()
+                          .replace(/_/g, " ")
+                          .replace(/(?: |\b)(\w)/g, function (key: string) {
+                            return key.toUpperCase();
+                          })}
                     </ListItemText>
                   </MenuItem>
                 );
@@ -212,9 +248,18 @@ export default function App() {
       },
       render: (rowData) => {
         if (rowData.rate[rowData.i].lendingRateType === "FIXED") {
-          return <p>{rowData.rate[rowData.i].period / 12} YEAR</p>;
+          return <p>{rowData.rate[rowData.i].period / 12} Year</p>;
         }
-        return <p>{rowData.rate[rowData.i].lendingRateType}</p>;
+        return (
+          <p>
+            {rowData.rate[rowData.i].lendingRateType
+              .toLowerCase()
+              .replace(/_/g, " ")
+              .replace(/(?: |\b)(\w)/g, function (key: string) {
+                return key.toUpperCase();
+              })}
+          </p>
+        );
       }
     },
     {
@@ -237,8 +282,16 @@ export default function App() {
   ];
 
   const options = {
-    columnsButton: true
+    columnsButton: true,
+    minBodyHeight: window.matchMedia("(orientation: portrait)").matches
+      ? "90vh"
+      : "55vh",
+    maxBodyHeight: window.matchMedia("(orientation: portrait)").matches
+      ? "90vh"
+      : "55vh"
   };
+
+  console.log(window.innerHeight > window.innerWidth);
 
   const detailPanel = (rowData: { rowData: productData }) => {
     const data = rowData.rowData;
@@ -277,6 +330,14 @@ export default function App() {
         setStore(actualData);
         sortTable(loanPeriod, loanPayment, loanBig, actualData);
       });
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      `https://raw.githubusercontent.com/LukePrior/open-banking-tracker/main/brands/brands.json`
+    )
+      .then((response) => response.json())
+      .then((actualData) => setImages(actualData));
   }, []);
 
   return (
@@ -361,8 +422,20 @@ export default function App() {
           <Grid container>
             <Grid container item xs={10} justifyContent="flex-start">
               <p>
-                Mortgage Manager was created by Luke Prior for the CSESoc x
-                Pearler Competition.
+                Mortgage Manager was created by{" "}
+                <a
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                    fontWeight: "bold"
+                  }}
+                  href="https://github.com/LukePrior"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Luke Prior
+                </a>{" "}
+                for the CSESoc x Pearler Competition.
               </p>
             </Grid>
             <Grid container item xs={2} justifyContent="flex-end">

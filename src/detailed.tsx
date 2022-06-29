@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { productData } from "./interfaces";
 import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
 
 export default function App(data: { data: productData }) {
   const [detailed, setDetailed] = useState<any>(undefined);
@@ -90,25 +90,36 @@ export default function App(data: { data: productData }) {
           <h3>Description</h3>
           <p>{detailed.data.description}</p>
           <h3>Sign Up</h3>
-          <p>{detailed.data.additionalInformation.overviewUri}</p>
+          {detailed.data.additionalInformation &&
+            detailed.data.additionalInformation.overviewUri && (
+              <p>{detailed.data.additionalInformation.overviewUri}</p>
+            )}
         </TabPanel>
         <TabPanel value={value} index={1}>
           <h3>Features</h3>
           {detailed.data.hasOwnProperty("features") && (
             <Box>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+              <Grid container spacing={1}>
                 {detailed.data.features.map((feature: any, index: number) => {
                   return (
-                    <Chip
-                      label={feature.featureType}
-                      variant={featureId === index ? "filled" : "outlined"}
-                      onClick={(event) =>
-                        setFeature(featureId === index ? -1 : index)
-                      }
-                    />
+                    <Grid item>
+                      <Chip
+                        color={featureId === index ? "primary" : "default"}
+                        label={feature.featureType
+                          .toLowerCase()
+                          .replace(/_/g, " ")
+                          .replace(/(?: |\b)(\w)/g, function (key: string) {
+                            return key.toUpperCase();
+                          })}
+                        variant={featureId === index ? "filled" : "outlined"}
+                        onClick={(event) =>
+                          setFeature(featureId === index ? -1 : index)
+                        }
+                      />
+                    </Grid>
                   );
                 })}
-              </Stack>
+              </Grid>
               {featureId !== -1 && (
                 <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
                   <h3>{detailed.data.features[featureId].featureType}</h3>
@@ -124,23 +135,33 @@ export default function App(data: { data: productData }) {
           <h3>Eligibility</h3>
           {detailed.data.hasOwnProperty("eligibility") && (
             <Box>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+              <Grid container spacing={1}>
                 {detailed.data.eligibility.map(
                   (eligibility: any, index: number) => {
                     return (
-                      <Chip
-                        label={eligibility.eligibilityType}
-                        variant={
-                          eligibilityId === index ? "filled" : "outlined"
-                        }
-                        onClick={(event) =>
-                          setEligibility(eligibilityId === index ? -1 : index)
-                        }
-                      />
+                      <Grid item>
+                        <Chip
+                          color={
+                            eligibilityId === index ? "primary" : "default"
+                          }
+                          label={eligibility.eligibilityType
+                            .toLowerCase()
+                            .replace(/_/g, " ")
+                            .replace(/(?: |\b)(\w)/g, function (key: string) {
+                              return key.toUpperCase();
+                            })}
+                          variant={
+                            eligibilityId === index ? "filled" : "outlined"
+                          }
+                          onClick={(event) =>
+                            setEligibility(eligibilityId === index ? -1 : index)
+                          }
+                        />
+                      </Grid>
                     );
                   }
                 )}
-              </Stack>
+              </Grid>
               {eligibilityId !== -1 && (
                 <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
                   <h3>
@@ -164,23 +185,34 @@ export default function App(data: { data: productData }) {
           <h3>Rates</h3>
           {detailed.data.hasOwnProperty("lendingRates") && (
             <Box>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+              <Grid container spacing={1}>
                 {detailed.data.lendingRates.map((rate: any, index: number) => {
                   return (
-                    <Chip
-                      label={
-                        Math.round(rate.rate * 10000) / 100 +
-                        "% - " +
-                        rate.lendingRateType
-                      }
-                      variant={rateId === index ? "filled" : "outlined"}
-                      onClick={(event) =>
-                        setRate(rateId === index ? -1 : index)
-                      }
-                    />
+                    <Grid item>
+                      <Chip
+                        color={rateId === index ? "primary" : "default"}
+                        label={
+                          Math.round(rate.rate * 10000) / 100 +
+                          "% - " +
+                          rate.lendingRateType
+                            .toLowerCase()
+                            .replace(/_/g, " ")
+                            .replace(/(?: |\b)(\w)/g, function (key: string) {
+                              return key.toUpperCase();
+                            }) +
+                          (rate.lendingRateType === "FIXED"
+                            ? " - " + rate.additionalValue
+                            : "")
+                        }
+                        variant={rateId === index ? "filled" : "outlined"}
+                        onClick={(event) =>
+                          setRate(rateId === index ? -1 : index)
+                        }
+                      />
+                    </Grid>
                   );
                 })}
-              </Stack>
+              </Grid>
               {rateId !== -1 && (
                 <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
                   <h3>{detailed.data.lendingRates[rateId].lendingRateType}</h3>
@@ -240,17 +272,22 @@ export default function App(data: { data: productData }) {
           <h3>Fees</h3>
           {detailed.data.hasOwnProperty("fees") && (
             <Box>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+              <Grid container spacing={1}>
                 {detailed.data.fees.map((fee: any, index: number) => {
                   return (
-                    <Chip
-                      label={fee.name}
-                      variant={feeId === index ? "filled" : "outlined"}
-                      onClick={(event) => setFee(feeId === index ? -1 : index)}
-                    />
+                    <Grid item>
+                      <Chip
+                        color={feeId === index ? "primary" : "default"}
+                        label={fee.name}
+                        variant={feeId === index ? "filled" : "outlined"}
+                        onClick={(event) =>
+                          setFee(feeId === index ? -1 : index)
+                        }
+                      />
+                    </Grid>
                   );
                 })}
-              </Stack>
+              </Grid>
               {feeId !== -1 && (
                 <Paper elevation={2} sx={{ mt: 1, p: 1 }}>
                   <h3>{detailed.data.fees[feeId].name}</h3>
