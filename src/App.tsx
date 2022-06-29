@@ -26,10 +26,23 @@ export default function App() {
   const [store, setStore] = useState([]);
   const [data, setData] = useState([]);
   const [images, setImages] = React.useState<any>({});
-  const [loanPeriod, setLoanPeriod] = React.useState<string | null>("0");
-  const [loanPayment, setLoanPayment] = React.useState<string | null>("0");
-  const [loanBig, setLoanBig] = React.useState<string | null>("0");
-  const [value, setValue] = React.useState<number | string | null>(600000);
+
+  const savedPeriod = window.localStorage.getItem("savedPeriod");
+  const savedType = window.localStorage.getItem("savedType");
+  const savedBig = window.localStorage.getItem("savedBig");
+  const savedAmount = window.localStorage.getItem("savedAmount");
+
+  const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
+    savedPeriod || "0"
+  );
+  const [loanPayment, setLoanPayment] = React.useState<string | null>(
+    savedType || "0"
+  );
+  const [loanBig, setLoanBig] = React.useState<string | null>(savedBig || "0");
+  const [value, setValue] = React.useState<number | string | null>(
+    savedAmount || 600000
+  );
+
   const savedDarkMode = window.localStorage.getItem("darkState");
   const defaultDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const prefersDarkMode = savedDarkMode || defaultDarkMode;
@@ -118,7 +131,10 @@ export default function App() {
       field: "brandName",
       render: (rowData) => {
         let brand = rowData.brandId;
-        let imgUrl = images[brand].logoUrl;
+        let imgUrl;
+        if (brand in images && "logoUrl" in images[brand]) {
+          imgUrl = images[brand].logoUrl;
+        }
         return (
           <Stack
             direction="column"
@@ -290,8 +306,6 @@ export default function App() {
       ? "90vh"
       : "55vh"
   };
-
-  console.log(window.innerHeight > window.innerWidth);
 
   const detailPanel = (rowData: { rowData: productData }) => {
     const data = rowData.rowData;
