@@ -162,6 +162,7 @@ export default function App() {
     {
       title: "Rate",
       field: "rate[0].rate",
+      defaultSort: "asc",
       customFilterAndSearch: (term, rowData) =>
         term === rowData.rate[rowData.i].rate + "%",
       customSort: (a, b) => a.rate[a.i].rate - b.rate[b.i].rate,
