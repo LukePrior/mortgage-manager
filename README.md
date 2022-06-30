@@ -8,6 +8,15 @@ The individual institutions are responsible for hosting and mainting their respe
 
 This data from GitHub is used to power the Mortgage Manager website which allows users to quickly and easily compare over 1000 mortgage products from 100+ brands. The website is written in React & TypeScript and includes features to filter and sort the returned matches along with viewing additional information such as eligability requirements and fees.
 
+
+
+| Light Mode  | Dark Mode |
+| ----------- | --------- |
+| ![Light Mode](https://user-images.githubusercontent.com/22492406/176590347-3abd461d-29fb-495c-bcd5-d585defc7a65.png) | ![Dark Mode](https://user-images.githubusercontent.com/22492406/176590374-309650a2-a4fd-47d2-8177-f1406d90d860.png) |
+| Fee Info | Rate Info |
+| ![image](https://user-images.githubusercontent.com/22492406/176590617-2e916e7e-732e-4c3a-8965-eea9a92fe909.png) | ![image](https://user-images.githubusercontent.com/22492406/176590726-1e984f70-8d21-4a1a-9cd3-5a3ccd203cf5.png) |
+
+
 ## Collecting the Data
 
 The [Open Banking Tracker](https://github.com/LukePrior/open-banking-tracker) was started to simplify the process of accessing Austrlian banking product information by aggregating the data products from over 110 institutions. The Australian Competition & Consumer Commission maintains a register of all brands obligated under the Consumer Data Right to offer publicly available Banking APIs.
