@@ -379,6 +379,8 @@ for file in os.listdir('brands/products/'):
 
 There are over 4000 individual files from over 110 different insitutions with a total size of over 50 MB detailing the various banking products that they offer and manually downloading this information for a specific application would be practically impossible. The Open Banking Tracker respository simplififies this process by automatically collecting these files daily and uploading them to GitHub along with creating an archived ZIP files of all products each day which can be used for historical reference. 
 
+![image](https://user-images.githubusercontent.com/22492406/176588439-5395e86c-b5c0-47e3-b221-919260a3aa93.png)
+
 The advantage of using Git for hosting and updating these files is the ability to view the specific changes when a product is updated such as a new interest rate or fee amount. The collection of Python scripts is run daily using GitHub actions and takes approximately 2 hours to complete the entire process.
 
 ```yaml
@@ -420,6 +422,8 @@ jobs:
 ## Displaying the Data
 
 The Mortgage Manager website is created with TypeScript, React 18 along with [Material UI](https://mui.com/) and [material-table](https://material-table-core.com/). This was my first major project creating using React so many of the specific implementations may not follow best practices but where possible I did attempt to create high-quality code with type checking.
+
+![image](https://user-images.githubusercontent.com/22492406/176588501-db82dc04-652e-4c97-8eb0-0db4a7435e28.png)
 
 The main highlight of the site is the main table displaying all the matching home-loans along with information about them such as interest rate, period, brand, and estimated monthly repayment. This table is created using material-table a powerful library which extends the functionality of the table object from Material UI. The material-table object requires a `columns` and `data` entry to be provided to designate what data should be displayed and how. The overview data is loaded from the Open Banking Tracker on GitHub into React using `useEffect`.
 
@@ -488,6 +492,8 @@ const handleClick = async () => {
 
 The information is split across multiple selectable tabs to minimise the height of the expanded view and allow for easier navigation of the website. These tabs are another component provided by Material UI helping to ensure that a conistent design is maintained across all sections and views. 
 
+![image](https://user-images.githubusercontent.com/22492406/176588625-942dc38b-4556-430b-b1c5-27a97cdd53bd.png)
+
 ```javascript
 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
     <Tabs
@@ -506,4 +512,7 @@ The information is split across multiple selectable tabs to minimise the height 
 ```
 
 The specific tabs that can potentially contain a large amount of information such as features, requirements, rates, and fees are further organised with individual chip modules for each individual icons. These chips can be selected to display teh specific information for each item. This information is drawn on a new component to add depth to the website per Material Design guidelines.
+
+![image](https://user-images.githubusercontent.com/22492406/176588569-c188bf5c-b2a8-49b2-b68b-d694dc4cff0b.png)
+
 
