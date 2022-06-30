@@ -4,11 +4,7 @@
 
 Mortgage Manager is an open-source online home-loan comparison tool using product data from the Consumer Data Standards Banking APIs. Authorised deposit-taking institutions are obligated to provide information on the products that they offer via a set of APIs defined by a standardised set of specifications allowing for machine processing. The individual institutions are responsible for hosting and mainting their respective APIs so to get an overview of all products offered in Australia I expanded my Open Banking Tracker which downloads all product information daily and publishes it to GitHub to also include an overview file for home-loans specififcally which is used to generate the main table in Mortgage Manager. This overview file is designed to be as small as possible so that it can quickly be downloaded which means that not all information for each product is included. This is resolved by manually downloading the entire product information also from my Open Banking Tracker repository when the details panel is opened 
 
-## Aggregate Data
-
-## Specific Data
-
-## Automated Scripts
+## Collecting the Data
 
 The [Open Banking Tracker](https://github.com/LukePrior/open-banking-tracker) was started to simplify the process of accessing Austrlian banking product information by aggregating the data products from over 110 institutions. The Australian Competition & Consumer Commission maintains a register of all brands obligated under the Consumer Data Right to offer publicly available Banking APIs.
 
@@ -193,18 +189,6 @@ for brand in brands:
               "description": "string",
               "additionalInfoUri": "string"
             }
-          ],
-          "additionalFeesAndPricingUris": [
-            {
-              "description": "string",
-              "additionalInfoUri": "string"
-            }
-          ],
-          "additionalBundleUris": [
-            {
-              "description": "string",
-              "additionalInfoUri": "string"
-            }
           ]
         },
         "cardArt": [
@@ -286,35 +270,12 @@ for file in os.listdir('brands/products/'):
           "description": "string",
           "additionalInfoUri": "string"
         }
-      ],
-      "additionalFeesAndPricingUris": [
-        {
-          "description": "string",
-          "additionalInfoUri": "string"
-        }
-      ],
-      "additionalBundleUris": [
-        {
-          "description": "string",
-          "additionalInfoUri": "string"
-        }
       ]
     },
     "cardArt": [
       {
         "title": "string",
         "imageUri": "string"
-      }
-    ],
-    "bundles": [
-      {
-        "name": "string",
-        "description": "string",
-        "additionalInfo": "string",
-        "additionalInfoUri": "string",
-        "productIds": [
-          "string"
-        ]
       }
     ],
     "features": [
@@ -378,32 +339,6 @@ for file in os.listdir('brands/products/'):
         ]
       }
     ],
-    "depositRates": [
-      {
-        "depositRateType": "BONUS",
-        "rate": "string",
-        "calculationFrequency": "string",
-        "applicationFrequency": "string",
-        "tiers": [
-          {
-            "name": "string",
-            "unitOfMeasure": "DAY",
-            "minimumValue": 0,
-            "maximumValue": 0,
-            "rateApplicationMethod": "PER_TIER",
-            "applicabilityConditions": {
-              "additionalInfo": "string",
-              "additionalInfoUri": "string"
-            },
-            "additionalInfo": "string",
-            "additionalInfoUri": "string"
-          }
-        ],
-        "additionalValue": "string",
-        "additionalInfo": "string",
-        "additionalInfoUri": "string"
-      }
-    ],
     "lendingRates": [
       {
         "lendingRateType": "BUNDLE_DISCOUNT_FIXED",
@@ -442,7 +377,9 @@ for file in os.listdir('brands/products/'):
 }
 ```
 
-There are over 4000 individual files from over 110 different insitutions with a total size of over 50 MB detailing the various banking products that they offer and manually downloading this information for a specific application would be practically impossible. The Open Banking Tracker respository simplififies this process by automatically collecting these files daily and uploading them to GitHub along with creating an archived ZIP files of all products each day which can be used for historical reference. The advantage of using Git for hosting and updating these files is the ability to view the specific changes when a product is updated such as a new interest rate or fee amount. The collection of Python scripts is run daily using GitHub actions and takes approximately 2 hours to complete the entire process.
+There are over 4000 individual files from over 110 different insitutions with a total size of over 50 MB detailing the various banking products that they offer and manually downloading this information for a specific application would be practically impossible. The Open Banking Tracker respository simplififies this process by automatically collecting these files daily and uploading them to GitHub along with creating an archived ZIP files of all products each day which can be used for historical reference. 
+
+The advantage of using Git for hosting and updating these files is the ability to view the specific changes when a product is updated such as a new interest rate or fee amount. The collection of Python scripts is run daily using GitHub actions and takes approximately 2 hours to complete the entire process.
 
 ```yaml
 on: 
@@ -480,9 +417,93 @@ jobs:
           default_author: github_actions
 ```
 
-## Website Design
+## Displaying the Data
 
-## Brand Imagery
+The Mortgage Manager website is created with TypeScript, React 18 along with [Material UI](https://mui.com/) and [material-table](https://material-table-core.com/). This was my first major project creating using React so many of the specific implementations may not follow best practices but where possible I did attempt to create high-quality code with type checking.
 
-## Mobile Optimised
+The main highlight of the site is the main table displaying all the matching home-loans along with information about them such as interest rate, period, brand, and estimated monthly repayment. This table is created using material-table a powerful library which extends the functionality of the table object from Material UI. The material-table object requires a `columns` and `data` entry to be provided to designate what data should be displayed and how. The overview data is loaded from the Open Banking Tracker on GitHub into React using `useEffect`.
+
+```javascript
+  useEffect(() => {
+    fetch(
+      `https://raw.githubusercontent.com/LukePrior/open-banking-tracker/main/aggregate/RESIDENTIAL_MORTGAGES/data.json`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setStore(data);
+      });
+  }, []);
+```
+
+The `columns` object contains various advanced features to control the rendering, search properites, sorting algoritms and over overides that are tailored specifically for mortgage product information. The following code snippet shows the section of `columns` dedicated to the monthly repayment column and how it is calculated and sorted.
+
+```javascript
+{
+    title: "Amount",
+    field: "amount",
+    render: (rowData) => {
+    let i = rowData.rate[rowData.i].rate / 12 / 100;
+    let n = 300;
+    let p;
+    if (value === null) {
+        p = 0;
+    } else if (typeof value === "string") {
+        p = parseFloat(value);
+    } else {
+        p = value;
+    }
+    let r = Math.round((p * (i * (1 + i) ** n)) / ((1 + i) ** n - 1));
+    return <p>${r.toLocaleString()}</p>;
+    },
+    customSort: (a, b) => {
+    return a.rate[a.i].rate - b.rate[b.i].rate;
+    }
+}
+```
+
+The individual products contain vastly more information that can be displayed on a single row in the table so a expanded view was implemented that allows detailed information for any product to be loaded. This data includes properties such as extended descriptions, features, eligability requirements, special rates, and fees. The data for any specific product is downloaded from GitHub when the expandedn view is opened with specific views programmed to display if the data cannot be found or the connection is lost.
+
+```javascript
+const handleClick = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      });
+
+      const result = await response.json();
+
+      setDetailed(result);
+    } catch (err) {
+      setErr("Error loading");
+    } finally {
+      setIsLoading(false);
+    }
+};
+```
+
+The information is split across multiple selectable tabs to minimise the height of the expanded view and allow for easier navigation of the website. These tabs are another component provided by Material UI helping to ensure that a conistent design is maintained across all sections and views. 
+
+```javascript
+<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+    <Tabs
+    value={value}
+    onChange={handleChange}
+    aria-label="basic tabs example"
+    variant="scrollable"
+    >
+    <Tab label="Details" {...a11yProps(0)} sx={{ width: 150 }} />
+    <Tab label="Features" {...a11yProps(1)} sx={{ width: 150 }} />
+    <Tab label="Requirements" {...a11yProps(2)} sx={{ width: 150 }} />
+    <Tab label="Rates" {...a11yProps(3)} sx={{ width: 150 }} />
+    <Tab label="Fees" {...a11yProps(4)} sx={{ width: 150 }} />
+    </Tabs>
+</Box>
+```
+
+The specific tabs that can potentially contain a large amount of information such as features, requirements, rates, and fees are further organised with individual chip modules for each individual icons. These chips can be selected to display teh specific information for each item. This information is drawn on a new component to add depth to the website per Material Design guidelines.
 
