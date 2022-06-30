@@ -21,6 +21,10 @@ import IconButton from "@mui/material/IconButton";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Stack from "@mui/material/Stack";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize("G-4GC23VSQE8");
+ReactGA.send("pageview");
 
 export default function App() {
   const [store, setStore] = useState([]);
