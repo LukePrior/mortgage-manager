@@ -515,4 +515,59 @@ The specific tabs that can potentially contain a large amount of information suc
 
 ![image](https://user-images.githubusercontent.com/22492406/176588569-c188bf5c-b2a8-49b2-b68b-d694dc4cff0b.png)
 
+The tool needs to accept specific user parameters in order to only show relevant mortgages such as those for a specific amount, period, or repayment type. This can be achieved by created a user interface where several options can be selected to filter the available mortgages. This interface is constructed using Material UI components such as buttons and text fields that allow the user to either select a specific option or show all available products.
 
+```javascript
+<Grid item style={{ display: "flex" }}>
+    <ToggleButtonGroup
+    value={loanPeriod}
+    exclusive
+    onChange={handleLoanPeriod}
+    color="primary"
+    >
+    <ToggleButton value="0">Variable</ToggleButton>
+    <ToggleButton value="1">1 YR</ToggleButton>
+    <ToggleButton value="2">2 YR</ToggleButton>
+    <ToggleButton value="3">3 YR</ToggleButton>
+    <ToggleButton value="4">4 YR</ToggleButton>
+    <ToggleButton value="5">5 YR</ToggleButton>
+    <ToggleButton value="10">10 YR</ToggleButton>
+    </ToggleButtonGroup>
+</Grid>
+```
+
+These buttons and fields trigger a filter of the table data when they are updated, this filter checks all the fields and only returns products that meet all of them. 
+
+```javascript
+let newData = localStore.filter((product: any) => {
+    let flag = false;
+    product.rate.forEach((rate: rateData, index: number) => {
+    if (
+        (loanPeriod === null ||
+        (loanPeriod === "0" &&
+            rate.lendingRateType === "VARIABLE" &&
+            flag === false) ||
+        ("period" in rate &&
+            rate.period === parseInt(loanPeriod) * 12 &&
+            flag === false)) &&
+        (loanPayment === null ||
+        (loanPayment === "0" &&
+            rate.repaymentType === "PRINCIPAL_AND_INTEREST") ||
+        (loanPayment === "1" && rate.repaymentType === "INTEREST_ONLY")) &&
+        (loanBig === null ||
+        (loanBig === "0" &&
+            ["000002", "000004", "000006", "000008"].includes(
+            product.brandId
+            )))
+    ) {
+        product.i = index;
+        flag = true;
+    }
+    });
+    return flag;
+});
+```
+
+The final major componenet I implemented was an advanced dark-mode which follows Material Design guidelines and can remember user/device preferences between sessions. The Material UI library supports the concepts of themes which dictate the style of all components on the site, this theme can easily be switched to the reccomended dark-mode design by implementing a toggle and state system. The system will first check if the user has previously selected a preference by checking local storage before falling back to system preference if no previous state could be found.
+
+I also implemented a few other features such as a header and footer containing more information about the site along with a simple Google Analytics tag to track visitor numbers.
