@@ -536,6 +536,8 @@ The tool needs to accept specific user parameters in order to only show relevant
 </Grid>
 ```
 
+![image](https://user-images.githubusercontent.com/22492406/176589674-61c0914c-780f-4d0d-b7e2-7972fddda40c.png)
+
 These buttons and fields trigger a filter of the table data when they are updated, this filter checks all the fields and only returns products that meet all of them. 
 
 ```javascript
@@ -570,4 +572,10 @@ let newData = localStore.filter((product: any) => {
 
 The final major componenet I implemented was an advanced dark-mode which follows Material Design guidelines and can remember user/device preferences between sessions. The Material UI library supports the concepts of themes which dictate the style of all components on the site, this theme can easily be switched to the reccomended dark-mode design by implementing a toggle and state system. The system will first check if the user has previously selected a preference by checking local storage before falling back to system preference if no previous state could be found.
 
+![image](https://user-images.githubusercontent.com/22492406/176589702-cb284708-d336-48b0-8e78-be644cd8099e.png)
+
 I also implemented a few other features such as a header and footer containing more information about the site along with a simple Google Analytics tag to track visitor numbers.
+
+## Hosting the Site
+
+Mortgage Manager is hosted on GitHub Pages for free using the [gh-pages](https://www.npmjs.com/package/gh-pages) npm package.
