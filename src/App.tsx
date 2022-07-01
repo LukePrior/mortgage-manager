@@ -22,6 +22,8 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Stack from "@mui/material/Stack";
 import ReactGA from "react-ga4";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
 ReactGA.initialize("G-4GC23VSQE8");
 ReactGA.send("pageview");
@@ -35,9 +37,10 @@ export default function App() {
   const savedType = window.localStorage.getItem("savedType");
   const savedBig = window.localStorage.getItem("savedBig");
   const savedAmount = window.localStorage.getItem("savedAmount");
+  const savedOffset = window.localStorage.getItem("savedOffset");
 
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
-    savedPeriod || "0"
+    savedPeriod || "1"
   );
   const [loanPayment, setLoanPayment] = React.useState<string | null>(
     savedType || "0"
@@ -45,6 +48,9 @@ export default function App() {
   const [loanBig, setLoanBig] = React.useState<string | null>(savedBig || "0");
   const [value, setValue] = React.useState<number | string | null>(
     savedAmount || 600000
+  );
+  const [loanOffset, setLoanOffset] = React.useState<string | null>(
+    savedOffset || null
   );
 
   const savedDarkMode = window.localStorage.getItem("darkState");
@@ -62,6 +68,7 @@ export default function App() {
     loanPeriod: string | null,
     loanPayment: string | null,
     loanBig: string | null,
+    loanOffset: string | null,
     allData?: any
   ) {
     let localStore = store;
@@ -69,7 +76,17 @@ export default function App() {
       localStore = allData;
     }
 
-    if (loanPeriod === null && loanPayment === null && loanBig === null) {
+    if (loanPeriod === "null") loanPeriod = null;
+    if (loanPayment === "null") loanPayment = null;
+    if (loanBig === "null") loanBig = null;
+    if (loanOffset === "null") loanOffset = null;
+
+    if (
+      loanPeriod === null &&
+      loanPayment === null &&
+      loanBig === null &&
+      loanOffset === null
+    ) {
       setData(localStore);
       return;
     }
@@ -93,7 +110,10 @@ export default function App() {
             (loanBig === "0" &&
               ["000002", "000004", "000006", "000008"].includes(
                 product.brandId
-              )))
+              ) &&
+              product.productId !== "afc433d8-947a-46b5-9f51-d15d4fb8ba3b")) &&
+          (loanOffset === null ||
+            (loanOffset === "0" && product.offset === true))
         ) {
           product.i = index;
           flag = true;
@@ -110,7 +130,12 @@ export default function App() {
     newLoanPeriod: string | null
   ) => {
     setLoanPeriod(newLoanPeriod);
-    sortTable(newLoanPeriod, loanPayment, loanBig);
+    if (typeof newLoanPeriod === "string") {
+      localStorage.setItem("savedPeriod", newLoanPeriod);
+    } else {
+      localStorage.setItem("savedPeriod", "null");
+    }
+    sortTable(newLoanPeriod, loanPayment, loanBig, loanOffset);
   };
 
   const handleLoanPayment = (
@@ -118,7 +143,12 @@ export default function App() {
     newLoanPayment: string | null
   ) => {
     setLoanPayment(newLoanPayment);
-    sortTable(loanPeriod, newLoanPayment, loanBig);
+    if (typeof newLoanPayment === "string") {
+      localStorage.setItem("savedType", newLoanPayment);
+    } else {
+      localStorage.setItem("savedType", "null");
+    }
+    sortTable(loanPeriod, newLoanPayment, loanBig, loanOffset);
   };
 
   const handleLoanBig = (
@@ -126,7 +156,44 @@ export default function App() {
     newLoanBig: string | null
   ) => {
     setLoanBig(newLoanBig);
-    sortTable(loanPeriod, loanPayment, newLoanBig);
+    if (typeof newLoanBig === "string") {
+      localStorage.setItem("savedBig", newLoanBig);
+    } else {
+      localStorage.setItem("savedBig", "null");
+    }
+    sortTable(loanPeriod, loanPayment, newLoanBig, loanOffset);
+  };
+
+  const handleLoanOffset = (
+    event: React.MouseEvent<HTMLElement>,
+    newLoanOffset: string | null
+  ) => {
+    setLoanOffset(newLoanOffset);
+    if (typeof newLoanOffset === "string") {
+      localStorage.setItem("savedOffset", newLoanOffset);
+    } else {
+      localStorage.setItem("savedOffset", "null");
+    }
+    sortTable(loanPeriod, loanPayment, loanBig, newLoanOffset);
+  };
+
+  const handleLoanAmount = (amount: any) => {
+    setValue(amount.target.value);
+    localStorage.setItem("savedAmount", amount.target.value);
+  };
+
+  const handleReset = (amount: any) => {
+    setLoanPeriod("1");
+    localStorage.setItem("savedPeriod", "1");
+    setLoanPayment("0");
+    localStorage.setItem("savedType", "0");
+    setLoanBig("0");
+    localStorage.setItem("savedBig", "0");
+    setLoanOffset(null);
+    localStorage.removeItem("savedOffset");
+    setValue(600000);
+    localStorage.setItem("savedAmount", "600000");
+    sortTable("1", "0", "0", null);
   };
 
   const columns: Array<Column<productData>> = [
@@ -297,7 +364,16 @@ export default function App() {
         );
       },
       render: (rowData) => {
-        return <p>{rowData.rate[rowData.i].repaymentType}</p>;
+        return (
+          <p>
+            {rowData.rate[rowData.i].repaymentType
+              .toLowerCase()
+              .replace(/_/g, " ")
+              .replace(/(?: |\b)(\w)/g, function (key: string) {
+                return key.toUpperCase();
+              })}
+          </p>
+        );
       }
     }
   ];
@@ -347,7 +423,7 @@ export default function App() {
           a[i].i = 0;
         });
         setStore(actualData);
-        sortTable(loanPeriod, loanPayment, loanBig, actualData);
+        sortTable(loanPeriod, loanPayment, loanBig, loanOffset, actualData);
       });
   }, []);
 
@@ -410,6 +486,16 @@ export default function App() {
               </ToggleButtonGroup>
             </Grid>
             <Grid item style={{ display: "flex" }}>
+              <ToggleButtonGroup
+                value={loanOffset}
+                exclusive
+                onChange={handleLoanOffset}
+                color="primary"
+              >
+                <ToggleButton value="0">OFFSET</ToggleButton>
+              </ToggleButtonGroup>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
               <FormControl>
                 <InputLabel htmlFor="outlined-adornment-amount">
                   Amount
@@ -421,10 +507,17 @@ export default function App() {
                     <InputAdornment position="start">$</InputAdornment>
                   }
                   value={value}
-                  onChange={(e) => setValue(e.target.value)}
+                  onChange={handleLoanAmount}
                   label="Amount"
                 />
               </FormControl>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
+              <ButtonGroup color="primary">
+                <ToggleButton onClick={handleReset} value="">
+                  <RestartAltIcon />
+                </ToggleButton>
+              </ButtonGroup>
             </Grid>
           </Grid>
         </Paper>
