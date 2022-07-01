@@ -6,6 +6,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import ReactGA from "react-ga4";
 
 export default function App(data: { data: productData }) {
   const [detailed, setDetailed] = useState<any>(undefined);
@@ -53,6 +54,13 @@ export default function App(data: { data: productData }) {
         )}
       </div>
     );
+  }
+
+  function sendSelectAnalytics(type: string, id: string) {
+    ReactGA.event("select_content", {
+      content_type: type,
+      item_id: id
+    });
   }
 
   let product = data.data;
@@ -356,6 +364,10 @@ export default function App(data: { data: productData }) {
       const result = await response.json();
 
       setDetailed(result);
+      sendSelectAnalytics(
+        "product",
+        `${data.data.brandId}-${data.data.productId}`
+      );
     } catch (err) {
       setErr("Error loading");
     } finally {
@@ -365,10 +377,6 @@ export default function App(data: { data: productData }) {
 
   useEffect(() => {
     handleClick();
-  }, []);
-
-  useEffect(() => {
-    console.log("test");
   }, []);
 
   return (
