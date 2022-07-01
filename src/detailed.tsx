@@ -367,6 +367,10 @@ export default function App(data: { data: productData }) {
     handleClick();
   }, []);
 
+  useEffect(() => {
+    console.log("test");
+  }, []);
+
   return (
     <div>
       {err && <h2>{err}</h2>}

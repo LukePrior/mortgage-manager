@@ -503,6 +503,7 @@ export default function App() {
                 <OutlinedInput
                   type="number"
                   id="outlined-adornment-amount"
+                  sx={{ width: "150px" }}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>
                   }
