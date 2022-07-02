@@ -149,6 +149,9 @@ export default function App() {
           flag = true;
         }
       });
+      if (product.brandId === "000133" || product.productName.includes("BROKER HOME LOAN")) {
+        return false
+      }
       return flag;
     });
 
