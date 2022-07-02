@@ -37,6 +37,7 @@ export default function App() {
   const savedType = window.localStorage.getItem("savedType");
   const savedBig = window.localStorage.getItem("savedBig");
   const savedAmount = window.localStorage.getItem("savedAmount");
+  const savedLVR = window.localStorage.getItem("savedLVR");
   const savedOffset = window.localStorage.getItem("savedOffset");
 
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
@@ -51,6 +52,9 @@ export default function App() {
   );
   const [loanOffset, setLoanOffset] = React.useState<string | null>(
     savedOffset || null
+  );
+  const [loanLVR, setLoanLVR] = React.useState<string | undefined>(
+    savedLVR || "80"
   );
 
   const savedDarkMode = window.localStorage.getItem("darkState");
@@ -69,6 +73,7 @@ export default function App() {
     loanPayment: string | null,
     loanBig: string | null,
     loanOffset: string | null,
+    loanLVR: string | undefined,
     allData?: any
   ) {
     let localStore = store;
@@ -85,7 +90,8 @@ export default function App() {
       loanPeriod === null &&
       loanPayment === null &&
       loanBig === null &&
-      loanOffset === null
+      loanOffset === null &&
+      loanLVR === undefined
     ) {
       setData(localStore);
       return;
@@ -113,7 +119,13 @@ export default function App() {
               ) &&
               product.productId !== "afc433d8-947a-46b5-9f51-d15d4fb8ba3b")) &&
           (loanOffset === null ||
-            (loanOffset === "0" && product.offset === true))
+            (loanOffset === "0" && product.offset === true)) &&
+          (loanLVR === undefined ||
+            !("minLVR" in rate) ||
+            (rate["minLVR"] !== undefined &&
+              rate["minLVR"] <= parseFloat(loanLVR) &&
+              rate["maxLVR"] !== undefined &&
+              rate["maxLVR"] >= parseFloat(loanLVR)))
         ) {
           product.i = index;
           flag = true;
@@ -135,7 +147,7 @@ export default function App() {
     } else {
       localStorage.setItem("savedPeriod", "null");
     }
-    sortTable(newLoanPeriod, loanPayment, loanBig, loanOffset);
+    sortTable(newLoanPeriod, loanPayment, loanBig, loanOffset, loanLVR);
   };
 
   const handleLoanPayment = (
@@ -148,7 +160,7 @@ export default function App() {
     } else {
       localStorage.setItem("savedType", "null");
     }
-    sortTable(loanPeriod, newLoanPayment, loanBig, loanOffset);
+    sortTable(loanPeriod, newLoanPayment, loanBig, loanOffset, loanLVR);
   };
 
   const handleLoanBig = (
@@ -161,7 +173,7 @@ export default function App() {
     } else {
       localStorage.setItem("savedBig", "null");
     }
-    sortTable(loanPeriod, loanPayment, newLoanBig, loanOffset);
+    sortTable(loanPeriod, loanPayment, newLoanBig, loanOffset, loanLVR);
   };
 
   const handleLoanOffset = (
@@ -174,12 +186,19 @@ export default function App() {
     } else {
       localStorage.setItem("savedOffset", "null");
     }
-    sortTable(loanPeriod, loanPayment, loanBig, newLoanOffset);
+    sortTable(loanPeriod, loanPayment, loanBig, newLoanOffset, loanLVR);
   };
 
   const handleLoanAmount = (amount: any) => {
     setValue(amount.target.value);
     localStorage.setItem("savedAmount", amount.target.value);
+  };
+
+  const handleLoanLVR = (event: SelectChangeEvent) => {
+    let lvr = event.target.value;
+    setLoanLVR(lvr);
+    localStorage.setItem("savedLVR", lvr);
+    sortTable(loanPeriod, loanPayment, loanBig, loanOffset, lvr);
   };
 
   const handleReset = (amount: any) => {
@@ -193,7 +212,9 @@ export default function App() {
     localStorage.removeItem("savedOffset");
     setValue(600000);
     localStorage.setItem("savedAmount", "600000");
-    sortTable("1", "0", "0", null);
+    setLoanLVR("80");
+    localStorage.setItem("savedLVR", "80");
+    sortTable("1", "0", "0", null, "80");
   };
 
   const columns: Array<Column<productData>> = [
@@ -423,7 +444,14 @@ export default function App() {
           a[i].i = 0;
         });
         setStore(actualData);
-        sortTable(loanPeriod, loanPayment, loanBig, loanOffset, actualData);
+        sortTable(
+          loanPeriod,
+          loanPayment,
+          loanBig,
+          loanOffset,
+          loanLVR,
+          actualData
+        );
       });
   }, []);
 
@@ -514,6 +542,24 @@ export default function App() {
               </FormControl>
             </Grid>
             <Grid item style={{ display: "flex" }}>
+              <FormControl>
+                <InputLabel htmlFor="outlined-lvr-percent">LVR</InputLabel>
+                <Select
+                  id="outlined-lvr-percent"
+                  label="LVR"
+                  value={loanLVR}
+                  onChange={handleLoanLVR}
+                >
+                  <MenuItem value={60}>60%</MenuItem>
+                  <MenuItem value={70}>70%</MenuItem>
+                  <MenuItem value={80}>80%</MenuItem>
+                  <MenuItem value={85}>85%</MenuItem>
+                  <MenuItem value={90}>90%</MenuItem>
+                  <MenuItem value={95}>95%</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
               <ButtonGroup color="primary">
                 <ToggleButton onClick={handleReset} value="">
                   <RestartAltIcon />
@@ -532,6 +578,14 @@ export default function App() {
           />
         </Grid>
         <Paper elevation={1} sx={{ p: 1, mt: 1 }}>
+          <Grid container>
+            <Grid container item xs={12} justifyContent="flex-start">
+              <p>
+                The information provided on this site may be outdated or
+                incorrect and should not be considered as financial advice.
+              </p>
+            </Grid>
+          </Grid>
           <Grid container>
             <Grid container item xs={10} justifyContent="flex-start">
               <p>

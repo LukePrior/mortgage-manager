@@ -3,6 +3,8 @@ interface rateData {
   lendingRateType: string;
   repaymentType: string;
   period: number;
+  minLVR?: number;
+  maxLVR?: number;
 }
 
 interface productData {
@@ -11,6 +13,7 @@ interface productData {
   productId: string;
   productName: string;
   description: string;
+  offset: boolean;
   rate: rateData[];
   i: number;
 }
