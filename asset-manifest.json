@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/mortgage-manager/static/js/main.4ff06bcc.js",
+    "main.js": "/mortgage-manager/static/js/main.eb3356c0.js",
     "index.html": "/mortgage-manager/index.html",
-    "main.4ff06bcc.js.map": "/mortgage-manager/static/js/main.4ff06bcc.js.map"
+    "main.eb3356c0.js.map": "/mortgage-manager/static/js/main.eb3356c0.js.map"
   },
   "entrypoints": [
-    "static/js/main.4ff06bcc.js"
+    "static/js/main.eb3356c0.js"
   ]
 }
