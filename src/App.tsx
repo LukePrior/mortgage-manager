@@ -40,6 +40,7 @@ export default function App() {
   const savedLVR = window.localStorage.getItem("savedLVR");
   const savedOffset = window.localStorage.getItem("savedOffset");
   const savedRedraw = window.localStorage.getItem("savedRedraw");
+  const savedPurpose = window.localStorage.getItem("savedPurpose");
 
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
     savedPeriod || "1"
@@ -60,6 +61,9 @@ export default function App() {
   const [loanLVR, setLoanLVR] = React.useState<string | undefined>(
     savedLVR || "80"
   );
+  const [loanPurpose, setLoanPurpose] = React.useState<string | undefined>(
+    savedPurpose || "0"
+  );
 
   const savedDarkMode = window.localStorage.getItem("darkState");
   const defaultDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -79,6 +83,7 @@ export default function App() {
     loanOffset: string | null,
     loanRedraw: string | null,
     loanLVR: string | undefined,
+    loanPurpose: string | undefined,
     allData?: any
   ) {
     let localStore = store;
@@ -98,17 +103,16 @@ export default function App() {
       loanBig === null &&
       loanOffset === null &&
       loanRedraw === null &&
-      loanLVR === undefined
+      loanLVR === undefined &&
+      loanPurpose === undefined
     ) {
       setData(localStore);
       return;
     }
 
-    console.log(loanLVR);
-
     let newData = localStore.filter((product: any) => {
       let flag = false;
-      product.rate.forEach((rate: rateData, index: number) => {
+      product.rate.forEach((rate: rateData, index: number, object: any) => {
         if (
           (loanPeriod === null ||
             (loanPeriod === "0" &&
@@ -136,7 +140,10 @@ export default function App() {
             ((rate["minLVR"] === undefined ||
               rate["minLVR"] <= parseFloat(loanLVR)) &&
               (rate["maxLVR"] === undefined ||
-                rate["maxLVR"] >= parseFloat(loanLVR))))
+                rate["maxLVR"] >= parseFloat(loanLVR)))) &&
+          (loanPurpose === undefined ||
+            (parseFloat(loanPurpose) === 0 && rate.purpose !== "INVESTMENT") ||
+            (parseFloat(loanPurpose) === 1 && rate.purpose === "INVESTMENT"))
         ) {
           product.i = index;
           flag = true;
@@ -164,7 +171,8 @@ export default function App() {
       loanBig,
       loanOffset,
       loanRedraw,
-      loanLVR
+      loanLVR,
+      loanPurpose
     );
   };
 
@@ -184,7 +192,8 @@ export default function App() {
       loanBig,
       loanOffset,
       loanRedraw,
-      loanLVR
+      loanLVR,
+      loanPurpose
     );
   };
 
@@ -204,7 +213,8 @@ export default function App() {
       newLoanBig,
       loanOffset,
       loanRedraw,
-      loanLVR
+      loanLVR,
+      loanPurpose
     );
   };
 
@@ -224,7 +234,8 @@ export default function App() {
       loanBig,
       newLoanOffset,
       loanRedraw,
-      loanLVR
+      loanLVR,
+      loanPurpose
     );
   };
 
@@ -244,7 +255,8 @@ export default function App() {
       loanBig,
       loanOffset,
       newLoanRedraw,
-      loanLVR
+      loanLVR,
+      loanPurpose
     );
   };
 
@@ -257,7 +269,30 @@ export default function App() {
     let lvr = event.target.value;
     setLoanLVR(lvr);
     localStorage.setItem("savedLVR", lvr);
-    sortTable(loanPeriod, loanPayment, loanBig, loanOffset, loanRedraw, lvr);
+    sortTable(
+      loanPeriod,
+      loanPayment,
+      loanBig,
+      loanOffset,
+      loanRedraw,
+      lvr,
+      loanPurpose
+    );
+  };
+
+  const handleLoanPurpose = (event: SelectChangeEvent) => {
+    let purpose = event.target.value;
+    setLoanPurpose(purpose);
+    localStorage.setItem("savedPurpose", purpose);
+    sortTable(
+      loanPeriod,
+      loanPayment,
+      loanBig,
+      loanOffset,
+      loanRedraw,
+      loanLVR,
+      purpose
+    );
   };
 
   const handleReset = (amount: any) => {
@@ -275,7 +310,9 @@ export default function App() {
     localStorage.setItem("savedAmount", "600000");
     setLoanLVR("80");
     localStorage.setItem("savedLVR", "80");
-    sortTable("1", "0", "0", null, null, "80");
+    setLoanPurpose("0");
+    localStorage.setItem("savedPurpose", "0");
+    sortTable("1", "0", "0", null, null, "80", "0");
   };
 
   const columns: Array<Column<productData>> = [
@@ -356,6 +393,16 @@ export default function App() {
                   });
                 if (period === "Fixed") {
                   period = rate.period / 12 + " Year";
+                }
+                if (
+                  (rate.purpose === "INVESTMENT" &&
+                    loanPurpose !== undefined &&
+                    parseInt(loanPurpose) === 0) ||
+                  (rate.purpose === "OWNER_OCCUPIED" &&
+                    loanPurpose !== undefined &&
+                    parseInt(loanPurpose) === 1)
+                ) {
+                  return null;
                 }
                 return (
                   <MenuItem value={index}>
@@ -512,6 +559,7 @@ export default function App() {
           loanOffset,
           loanRedraw,
           loanLVR,
+          loanPurpose,
           actualData
         );
       });
@@ -628,6 +676,20 @@ export default function App() {
                   <MenuItem value={85}>85%</MenuItem>
                   <MenuItem value={90}>90%</MenuItem>
                   <MenuItem value={95}>95%</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
+              <FormControl>
+                <InputLabel htmlFor="outlined-purpose">Purpose</InputLabel>
+                <Select
+                  id="outlined-purpose"
+                  label="Purpose"
+                  value={loanPurpose}
+                  onChange={handleLoanPurpose}
+                >
+                  <MenuItem value={"0"}>Owner Occupier</MenuItem>
+                  <MenuItem value={"1"}>Investment</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

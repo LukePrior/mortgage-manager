@@ -5,6 +5,7 @@ interface rateData {
   period: number;
   minLVR?: number;
   maxLVR?: number;
+  purpose?: string;
 }
 
 interface productData {
