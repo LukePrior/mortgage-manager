@@ -39,6 +39,7 @@ export default function App() {
   const savedAmount = window.localStorage.getItem("savedAmount");
   const savedLVR = window.localStorage.getItem("savedLVR");
   const savedOffset = window.localStorage.getItem("savedOffset");
+  const savedRedraw = window.localStorage.getItem("savedRedraw");
 
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
     savedPeriod || "1"
@@ -52,6 +53,9 @@ export default function App() {
   );
   const [loanOffset, setLoanOffset] = React.useState<string | null>(
     savedOffset || null
+  );
+  const [loanRedraw, setLoanRedraw] = React.useState<string | null>(
+    savedRedraw || null
   );
   const [loanLVR, setLoanLVR] = React.useState<string | undefined>(
     savedLVR || "80"
@@ -73,6 +77,7 @@ export default function App() {
     loanPayment: string | null,
     loanBig: string | null,
     loanOffset: string | null,
+    loanRedraw: string | null,
     loanLVR: string | undefined,
     allData?: any
   ) {
@@ -85,17 +90,21 @@ export default function App() {
     if (loanPayment === "null") loanPayment = null;
     if (loanBig === "null") loanBig = null;
     if (loanOffset === "null") loanOffset = null;
+    if (loanRedraw === "null") loanRedraw = null;
 
     if (
       loanPeriod === null &&
       loanPayment === null &&
       loanBig === null &&
       loanOffset === null &&
+      loanRedraw === null &&
       loanLVR === undefined
     ) {
       setData(localStore);
       return;
     }
+
+    console.log(loanLVR);
 
     let newData = localStore.filter((product: any) => {
       let flag = false;
@@ -120,6 +129,8 @@ export default function App() {
               product.productId !== "afc433d8-947a-46b5-9f51-d15d4fb8ba3b")) &&
           (loanOffset === null ||
             (loanOffset === "0" && product.offset === true)) &&
+          (loanRedraw === null ||
+            (loanRedraw === "0" && product.redraw === true)) &&
           (loanLVR === undefined ||
             !("minLVR" in rate) ||
             (rate["minLVR"] !== undefined &&
@@ -147,7 +158,14 @@ export default function App() {
     } else {
       localStorage.setItem("savedPeriod", "null");
     }
-    sortTable(newLoanPeriod, loanPayment, loanBig, loanOffset, loanLVR);
+    sortTable(
+      newLoanPeriod,
+      loanPayment,
+      loanBig,
+      loanOffset,
+      loanRedraw,
+      loanLVR
+    );
   };
 
   const handleLoanPayment = (
@@ -160,7 +178,14 @@ export default function App() {
     } else {
       localStorage.setItem("savedType", "null");
     }
-    sortTable(loanPeriod, newLoanPayment, loanBig, loanOffset, loanLVR);
+    sortTable(
+      loanPeriod,
+      newLoanPayment,
+      loanBig,
+      loanOffset,
+      loanRedraw,
+      loanLVR
+    );
   };
 
   const handleLoanBig = (
@@ -173,7 +198,14 @@ export default function App() {
     } else {
       localStorage.setItem("savedBig", "null");
     }
-    sortTable(loanPeriod, loanPayment, newLoanBig, loanOffset, loanLVR);
+    sortTable(
+      loanPeriod,
+      loanPayment,
+      newLoanBig,
+      loanOffset,
+      loanRedraw,
+      loanLVR
+    );
   };
 
   const handleLoanOffset = (
@@ -186,7 +218,34 @@ export default function App() {
     } else {
       localStorage.setItem("savedOffset", "null");
     }
-    sortTable(loanPeriod, loanPayment, loanBig, newLoanOffset, loanLVR);
+    sortTable(
+      loanPeriod,
+      loanPayment,
+      loanBig,
+      newLoanOffset,
+      loanRedraw,
+      loanLVR
+    );
+  };
+
+  const handleLoanRedraw = (
+    event: React.MouseEvent<HTMLElement>,
+    newLoanRedraw: string | null
+  ) => {
+    setLoanRedraw(newLoanRedraw);
+    if (typeof newLoanRedraw === "string") {
+      localStorage.setItem("savedRedraw", newLoanRedraw);
+    } else {
+      localStorage.setItem("savedRedraw", "null");
+    }
+    sortTable(
+      loanPeriod,
+      loanPayment,
+      loanBig,
+      loanOffset,
+      newLoanRedraw,
+      loanLVR
+    );
   };
 
   const handleLoanAmount = (amount: any) => {
@@ -198,7 +257,7 @@ export default function App() {
     let lvr = event.target.value;
     setLoanLVR(lvr);
     localStorage.setItem("savedLVR", lvr);
-    sortTable(loanPeriod, loanPayment, loanBig, loanOffset, lvr);
+    sortTable(loanPeriod, loanPayment, loanBig, loanOffset, loanRedraw, lvr);
   };
 
   const handleReset = (amount: any) => {
@@ -210,11 +269,13 @@ export default function App() {
     localStorage.setItem("savedBig", "0");
     setLoanOffset(null);
     localStorage.removeItem("savedOffset");
+    setLoanRedraw(null);
+    localStorage.removeItem("savedRedraw");
     setValue(600000);
     localStorage.setItem("savedAmount", "600000");
     setLoanLVR("80");
     localStorage.setItem("savedLVR", "80");
-    sortTable("1", "0", "0", null, "80");
+    sortTable("1", "0", "0", null, null, "80");
   };
 
   const columns: Array<Column<productData>> = [
@@ -449,6 +510,7 @@ export default function App() {
           loanPayment,
           loanBig,
           loanOffset,
+          loanRedraw,
           loanLVR,
           actualData
         );
@@ -521,6 +583,16 @@ export default function App() {
                 color="primary"
               >
                 <ToggleButton value="0">OFFSET</ToggleButton>
+              </ToggleButtonGroup>
+            </Grid>
+            <Grid item style={{ display: "flex" }}>
+              <ToggleButtonGroup
+                value={loanRedraw}
+                exclusive
+                onChange={handleLoanRedraw}
+                color="primary"
+              >
+                <ToggleButton value="0">REDRAW</ToggleButton>
               </ToggleButtonGroup>
             </Grid>
             <Grid item style={{ display: "flex" }}>

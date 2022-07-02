@@ -14,6 +14,7 @@ interface productData {
   productName: string;
   description: string;
   offset: boolean;
+  redraw: boolean;
   rate: rateData[];
   i: number;
 }
