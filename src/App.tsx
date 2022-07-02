@@ -132,11 +132,11 @@ export default function App() {
           (loanRedraw === null ||
             (loanRedraw === "0" && product.redraw === true)) &&
           (loanLVR === undefined ||
-            !("minLVR" in rate) ||
-            (rate["minLVR"] !== undefined &&
-              rate["minLVR"] <= parseFloat(loanLVR) &&
-              rate["maxLVR"] !== undefined &&
-              rate["maxLVR"] >= parseFloat(loanLVR)))
+            (!("minLVR" in rate) && !("maxLVR" in rate)) ||
+            ((rate["minLVR"] === undefined ||
+              rate["minLVR"] <= parseFloat(loanLVR)) &&
+              (rate["maxLVR"] === undefined ||
+                rate["maxLVR"] >= parseFloat(loanLVR))))
         ) {
           product.i = index;
           flag = true;
