@@ -149,8 +149,11 @@ export default function App() {
           flag = true;
         }
       });
-      if (product.brandId === "000133" || product.productName.includes("BROKER HOME LOAN")) {
-        return false
+      if (
+        product.brandId === "000133" ||
+        product.productName.includes("BROKER HOME LOAN")
+      ) {
+        return false;
       }
       return flag;
     });
@@ -612,7 +615,7 @@ export default function App() {
                 onChange={handleLoanPayment}
                 color="primary"
               >
-                <ToggleButton value="0">Principle & Interest</ToggleButton>
+                <ToggleButton value="0">Principal & Interest</ToggleButton>
                 <ToggleButton value="1">Interest Only</ToggleButton>
               </ToggleButtonGroup>
             </Grid>
