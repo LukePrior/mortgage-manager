@@ -151,7 +151,11 @@ export default function App() {
       });
       if (
         product.brandId === "000133" ||
-        product.productName.includes("BROKER HOME LOAN")
+        product.brandId === "000138" ||
+        product.brandId === "000238" ||
+        product.brandId === "000202" ||
+        product.productName.includes("BROKER HOME LOAN") ||
+        product.productName.includes("The Works Package 2 year introductory")
       ) {
         return false;
       }
