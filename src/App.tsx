@@ -482,7 +482,7 @@ export default function App() {
         } else {
           p = value;
         }
-        let r = p * (i * (1 + i) ** n)) / ((1 + i) ** n - 1);
+        let r = p * (i * (1 + i) ** n) / ((1 + i) ** n - 1);
         switch (loanRepayments) {
           case "0":
             r = Math.round(r);
