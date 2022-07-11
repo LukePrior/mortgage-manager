@@ -100,7 +100,7 @@ export default function App(data: { data: productData }) {
           <h3>Sign Up</h3>
           {detailed.data.additionalInformation &&
             detailed.data.additionalInformation.overviewUri && (
-              <p>{detailed.data.additionalInformation.overviewUri}</p>
+              <p><a href={detailed.data.additionalInformation.overviewUri} target="_blank">{detailed.data.additionalInformation.overviewUri}</a></p>
             )}
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -133,7 +133,7 @@ export default function App(data: { data: productData }) {
                   <h3>{detailed.data.features[featureId].featureType}</h3>
                   <p>{detailed.data.features[featureId].additionalValue}</p>
                   <p>{detailed.data.features[featureId].additionalInfo}</p>
-                  <p>{detailed.data.features[featureId].additionalInfoUri}</p>
+                  <p><a href={detailed.data.features[featureId].additionalInfoUri} target="_blank">{detailed.data.features[featureId].additionalInfoUri}</a></p>
                 </Paper>
               )}
             </Box>
@@ -182,7 +182,7 @@ export default function App(data: { data: productData }) {
                     {detailed.data.eligibility[eligibilityId].additionalInfo}
                   </p>
                   <p>
-                    {detailed.data.eligibility[eligibilityId].additionalInfoUri}
+                    <a href={detailed.data.eligibility[eligibilityId].additionalInfoUri} target="_blank">{detailed.data.eligibility[eligibilityId].additionalInfoUri}</a>
                   </p>
                 </Paper>
               )}
@@ -243,7 +243,7 @@ export default function App(data: { data: productData }) {
                   )}
                   <p>{detailed.data.lendingRates[rateId].additionalValue}</p>
                   <p>{detailed.data.lendingRates[rateId].additionalInfo}</p>
-                  <p>{detailed.data.lendingRates[rateId].additionalInfoUri}</p>
+                  <p><a href={detailed.data.lendingRates[rateId].additionalInfoUri} target="_blank">{detailed.data.lendingRates[rateId].additionalInfoUri}</a></p>
                   {detailed.data.lendingRates[rateId].tiers &&
                     detailed.data.lendingRates[rateId].tiers.length > 0 && (
                       <h4>Tiers</h4>
@@ -266,7 +266,7 @@ export default function App(data: { data: productData }) {
                                   {tier.applicabilityConditions.additionalInfo}
                                 </p>
                               )}
-                            <p>{tier.additionalInfoUri}</p>
+                            <p><a href={tier.additionalInfoUri} target="_blank">{tier.additionalInfoUri}</a></p>
                           </Paper>
                         );
                       }
@@ -304,7 +304,7 @@ export default function App(data: { data: productData }) {
                   {detailed.data.fees[feeId].amount && (
                     <p>${detailed.data.fees[feeId].amount}</p>
                   )}
-                  <p>{detailed.data.fees[feeId].additionalInfoUri}</p>
+                  <p><a href={detailed.data.fees[feeId].additionalInfoUri} target="_blank">{detailed.data.fees[feeId].additionalInfoUri}</a></p>
                   {detailed.data.fees[feeId].discounts &&
                     detailed.data.fees[feeId].discounts.length > 0 && (
                       <h4>Discounts</h4>
@@ -318,7 +318,7 @@ export default function App(data: { data: productData }) {
                           <p>{discount.description}</p>
                           <p>{discount.additionalInfo}</p>
                           {discount.amount && <p>Save ${discount.amount}</p>}
-                          <p>{discount.additionalInfoUri}</p>
+                          <p><a href={discount.additionalInfoUri} target="_blank">{discount.additionalInfoUri}</a></p>
                           {discount.eligibility && <h5>Eligability</h5>}
                           {discount.eligibility &&
                             discount.eligibility.map((eligability: any) => {
@@ -329,7 +329,7 @@ export default function App(data: { data: productData }) {
                                   </p>
                                   <p>{eligability.additionalValue}</p>
                                   <p>{eligability.additionalInfo}</p>
-                                  <p>{eligability.additionalInfoUri}</p>
+                                  <p><a href={eligability.additionalInfoUri} target="_blank">{eligability.additionalInfoUri}</a></p>
                                 </Paper>
                               );
                             })}
