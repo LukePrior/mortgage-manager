@@ -20,4 +20,18 @@ interface productData {
   i: number;
 }
 
-export { productData, rateData };
+interface rate {
+  time: number;
+  rate: number;
+}
+
+interface rates {
+  rates: rate[];
+  name: string;
+  period?: number;
+  lendingRateType?: string;
+  repaymentType?: string;
+  purpose?: string;
+}
+
+export { productData, rateData, rate, rates };

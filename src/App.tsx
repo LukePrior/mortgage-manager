@@ -41,7 +41,6 @@ export default function App() {
   const savedOffset = window.localStorage.getItem("savedOffset");
   const savedRedraw = window.localStorage.getItem("savedRedraw");
   const savedPurpose = window.localStorage.getItem("savedPurpose");
-  const savedRepayments = window.localStorage.getItem("savedRepayments");
 
   const [loanPeriod, setLoanPeriod] = React.useState<string | null>(
     savedPeriod || "1"
@@ -64,9 +63,6 @@ export default function App() {
   );
   const [loanPurpose, setLoanPurpose] = React.useState<string | undefined>(
     savedPurpose || "0"
-  );
-  const [loanRepayments, setLoanRepayments] = React.useState<string | undefined>(
-    savedRepayments || "0"
   );
 
   const savedDarkMode = window.localStorage.getItem("darkState");
@@ -312,21 +308,6 @@ export default function App() {
     );
   };
 
-  const handleLoanRepayments = (event: SelectChangeEvent) => {
-    let repayments = event.target.value;
-    setLoanRepayments(repayments);
-    localStorage.setItem("savedRepayments", repayments);
-    sortTable(
-      loanPeriod,
-      loanPayment,
-      loanBig,
-      loanOffset,
-      loanRedraw,
-      loanLVR,
-      loanPurpose
-    );
-  };  
-
   const handleReset = (amount: any) => {
     setLoanPeriod("1");
     localStorage.setItem("savedPeriod", "1");
@@ -344,8 +325,6 @@ export default function App() {
     localStorage.setItem("savedLVR", "80");
     setLoanPurpose("0");
     localStorage.setItem("savedPurpose", "0");
-    setLoanRepayments("0");
-    localStorage.setItem("savedRepayments", "0");
     sortTable("1", "0", "0", null, null, "80", "0");
   };
 
@@ -472,7 +451,7 @@ export default function App() {
       title: "Amount",
       field: "amount",
       render: (rowData) => {
-        let i = rowData.rate[rowData.i].rate / 12 / 100;         
+        let i = rowData.rate[rowData.i].rate / 12 / 100;
         let n = 300;
         let p;
         if (value === null) {
@@ -482,18 +461,7 @@ export default function App() {
         } else {
           p = value;
         }
-        let r = p * (i * (1 + i) ** n) / ((1 + i) ** n - 1);
-        switch (loanRepayments) {
-          case "0":
-            r = Math.round(r);
-            break;            
-          case "1":
-            r = Math.round(r * 12 / 365 * 14);
-            break;            
-          case "2":
-            r = Math.round(r * 12 / 365 * 7);
-            break;            
-        }        
+        let r = Math.round((p * (i * (1 + i) ** n)) / ((1 + i) ** n - 1));
         return <p>${r.toLocaleString()}</p>;
       },
       customSort: (a, b) => {
@@ -621,7 +589,7 @@ export default function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
-      <Container maxWidth={false} sx={{ p: 0.5 }}>
+      <Container maxWidth="xl" sx={{ p: 0.5 }}>
         <Paper elevation={1} sx={{ p: 1, mb: 1, mt: 1 }}>
           <h1>Mortgage Manager</h1>
           <p>
@@ -739,21 +707,6 @@ export default function App() {
               </FormControl>
             </Grid>
             <Grid item style={{ display: "flex" }}>
-              <FormControl>
-                <InputLabel htmlFor="outlined-repayments">Repayments</InputLabel>
-                <Select
-                  id="outlined-repayments"
-                  label="Repayments"
-                  value={loanRepayments}
-                  onChange={handleLoanRepayments}
-                >
-                  <MenuItem value={"0"}>Monthly</MenuItem>
-                  <MenuItem value={"1"}>Fortnightly</MenuItem>
-                  <MenuItem value={"2"}>Weekly</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item style={{ display: "flex" }}>
               <ButtonGroup color="primary">
                 <ToggleButton onClick={handleReset} value="">
                   <RestartAltIcon />
@@ -795,8 +748,8 @@ export default function App() {
                   rel="noreferrer"
                 >
                   Luke Prior
-                </a>{" "}
-                for the CSESoc x Pearler Competition.
+                </a>
+                .
               </p>
             </Grid>
             <Grid container item xs={2} justifyContent="flex-end">

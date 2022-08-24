@@ -7,6 +7,7 @@ import Tab from "@mui/material/Tab";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import ReactGA from "react-ga4";
+import History from "./history";
 
 export default function App(data: { data: productData }) {
   const [detailed, setDetailed] = useState<any>(undefined);
@@ -92,6 +93,7 @@ export default function App(data: { data: productData }) {
             <Tab label="Requirements" {...a11yProps(2)} sx={{ width: 150 }} />
             <Tab label="Rates" {...a11yProps(3)} sx={{ width: 150 }} />
             <Tab label="Fees" {...a11yProps(4)} sx={{ width: 150 }} />
+            <Tab label="History" {...a11yProps(5)} sx={{ width: 150 }} />
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
@@ -100,7 +102,7 @@ export default function App(data: { data: productData }) {
           <h3>Sign Up</h3>
           {detailed.data.additionalInformation &&
             detailed.data.additionalInformation.overviewUri && (
-              <p><a href={detailed.data.additionalInformation.overviewUri} target="_blank">{detailed.data.additionalInformation.overviewUri}</a></p>
+              <p>{detailed.data.additionalInformation.overviewUri}</p>
             )}
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -133,7 +135,7 @@ export default function App(data: { data: productData }) {
                   <h3>{detailed.data.features[featureId].featureType}</h3>
                   <p>{detailed.data.features[featureId].additionalValue}</p>
                   <p>{detailed.data.features[featureId].additionalInfo}</p>
-                  <p><a href={detailed.data.features[featureId].additionalInfoUri} target="_blank">{detailed.data.features[featureId].additionalInfoUri}</a></p>
+                  <p>{detailed.data.features[featureId].additionalInfoUri}</p>
                 </Paper>
               )}
             </Box>
@@ -182,7 +184,7 @@ export default function App(data: { data: productData }) {
                     {detailed.data.eligibility[eligibilityId].additionalInfo}
                   </p>
                   <p>
-                    <a href={detailed.data.eligibility[eligibilityId].additionalInfoUri} target="_blank">{detailed.data.eligibility[eligibilityId].additionalInfoUri}</a>
+                    {detailed.data.eligibility[eligibilityId].additionalInfoUri}
                   </p>
                 </Paper>
               )}
@@ -243,7 +245,7 @@ export default function App(data: { data: productData }) {
                   )}
                   <p>{detailed.data.lendingRates[rateId].additionalValue}</p>
                   <p>{detailed.data.lendingRates[rateId].additionalInfo}</p>
-                  <p><a href={detailed.data.lendingRates[rateId].additionalInfoUri} target="_blank">{detailed.data.lendingRates[rateId].additionalInfoUri}</a></p>
+                  <p>{detailed.data.lendingRates[rateId].additionalInfoUri}</p>
                   {detailed.data.lendingRates[rateId].tiers &&
                     detailed.data.lendingRates[rateId].tiers.length > 0 && (
                       <h4>Tiers</h4>
@@ -266,7 +268,7 @@ export default function App(data: { data: productData }) {
                                   {tier.applicabilityConditions.additionalInfo}
                                 </p>
                               )}
-                            <p><a href={tier.additionalInfoUri} target="_blank">{tier.additionalInfoUri}</a></p>
+                            <p>{tier.additionalInfoUri}</p>
                           </Paper>
                         );
                       }
@@ -304,7 +306,7 @@ export default function App(data: { data: productData }) {
                   {detailed.data.fees[feeId].amount && (
                     <p>${detailed.data.fees[feeId].amount}</p>
                   )}
-                  <p><a href={detailed.data.fees[feeId].additionalInfoUri} target="_blank">{detailed.data.fees[feeId].additionalInfoUri}</a></p>
+                  <p>{detailed.data.fees[feeId].additionalInfoUri}</p>
                   {detailed.data.fees[feeId].discounts &&
                     detailed.data.fees[feeId].discounts.length > 0 && (
                       <h4>Discounts</h4>
@@ -318,7 +320,7 @@ export default function App(data: { data: productData }) {
                           <p>{discount.description}</p>
                           <p>{discount.additionalInfo}</p>
                           {discount.amount && <p>Save ${discount.amount}</p>}
-                          <p><a href={discount.additionalInfoUri} target="_blank">{discount.additionalInfoUri}</a></p>
+                          <p>{discount.additionalInfoUri}</p>
                           {discount.eligibility && <h5>Eligability</h5>}
                           {discount.eligibility &&
                             discount.eligibility.map((eligability: any) => {
@@ -329,7 +331,7 @@ export default function App(data: { data: productData }) {
                                   </p>
                                   <p>{eligability.additionalValue}</p>
                                   <p>{eligability.additionalInfo}</p>
-                                  <p><a href={eligability.additionalInfoUri} target="_blank">{eligability.additionalInfoUri}</a></p>
+                                  <p>{eligability.additionalInfoUri}</p>
                                 </Paper>
                               );
                             })}
@@ -340,6 +342,9 @@ export default function App(data: { data: productData }) {
               )}
             </Box>
           )}
+        </TabPanel>
+        <TabPanel value={value} index={5}>
+          <History data={data.data}></History>
         </TabPanel>
         <br></br>
       </Box>
