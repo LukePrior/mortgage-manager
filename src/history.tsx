@@ -70,6 +70,13 @@ export default function App(data: { data: productData }) {
       title: {
         display: true,
         text: "Interest Rate"
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            return context.dataset.label + " " + context.parsed.y + "%";
+          }
+        }
       }
     }
   };
@@ -80,7 +87,7 @@ export default function App(data: { data: productData }) {
 
   const Panel = () => (
     <div>
-      <Line options={options} data={dataset} />
+      <Line style={{maxWidth: "100vw", maxHeight: "50vh"}} options={options} data={dataset} />
     </div>
   );
 
@@ -102,13 +109,15 @@ export default function App(data: { data: productData }) {
       let result = await response.json();
 
       result = result.filter((rate: rates) => {
-        if (rate.lendingRateType === "DISCOUNT") {
+        if (rate.lendingRateType === "DISCOUNT" || rate.lendingRateType === "BUNDLE_DISCOUNT_FIXED" || rate.lendingRateType === "BUNDLE_DISCOUNT_VARIABLE") {
           return false;
         } else {
           return true;
         }
       });
 
+      let match = 0;
+      let count = 0;
       dataset.datasets = result.map((rate: rates, index: number) => {
         let letters = "0123456789ABCDEF".split("");
         let color = "#";
@@ -121,6 +130,11 @@ export default function App(data: { data: productData }) {
           return entry;
         });
 
+        if (rate.rates.length > count) {
+          count = rate.rates.length;
+          match = index;
+        }
+
         rates.unshift({ time: Date.now(), rate: rate.rates[0].rate });
 
         let dataset = {
@@ -129,10 +143,12 @@ export default function App(data: { data: productData }) {
           borderColor: color,
           backgroundColor: color,
           stepped: "after",
-          hidden: index !== 0 ? true : false
+          hidden: true
         };
         return dataset;
       });
+
+      dataset.datasets[match].hidden = false;
 
       setDetailed(result);
       sendHistoryAnalytics(
