@@ -131,7 +131,7 @@ export default function App() {
             (loanPayment === "1" && rate.repaymentType === "INTEREST_ONLY")) &&
           (loanBig === null ||
             (loanBig === "0" &&
-              ["000002", "000004", "000006", "000008"].includes(
+              ["25797662-e294-ea11-a831-000d3a8842e1", "ffe2945b-e094-ea11-a831-000d3a8842e1", "f4562bb8-e394-ea11-a831-000d3a8842e1", "25233bad-e494-ea11-a831-000d3a8842e1"].includes(
                 product.brandId
               ) &&
               product.productId !== "afc433d8-947a-46b5-9f51-d15d4fb8ba3b")) &&
@@ -154,17 +154,16 @@ export default function App() {
         }
       });
       if (
-        product.brandId === "000031" ||
-        product.brandId === "000132" ||
-        product.brandId === "000133" ||
-        product.brandId === "000138" ||
-        product.brandId === "000185" ||
-        product.brandId === "000187" ||
-        product.brandId === "000197" ||
-        product.brandId === "000198" ||
-        product.brandId === "000202" ||
-        product.brandId === "000238" ||
-        product.brandId === "000240" ||
+        product.brandId === "971e8453-8933-eb11-a835-000d3a8842e1" ||
+        product.brandId === "298987af-3ead-eb11-a822-000d3a884a20" ||
+        product.brandId === "89d458be-14ae-eb11-a822-000d3a884a20" ||
+        product.brandId === "ffc015ae-7ebf-eb11-a823-000d3a884a20" ||
+        product.brandId === "37d9ab31-6ac2-eb11-a823-000d3a884a20" ||
+        product.brandId === "27562b79-f6c8-eb11-a823-000d3a884a20" ||
+        product.brandId === "6de12fb5-acc9-eb11-a823-000d3a884a20" ||
+        product.brandId === "84d1b971-37cf-eb11-a824-000d3a884a20" ||
+        product.brandId === "75a52ce6-120a-ec11-a826-000d3a884a20" ||
+        product.brandId === "c289cfa3-b00b-ec11-a826-000d3a884a20" ||
         product.productName.includes("BROKER HOME LOAN") ||
         product.productName.includes("The Works Package 2 year introductory")
       ) {
@@ -360,8 +359,8 @@ export default function App() {
       render: (rowData) => {
         let brand = rowData.brandId;
         let imgUrl;
-        if (brand in images && "logoUrl" in images[brand]) {
-          imgUrl = images[brand].logoUrl;
+        if (brand in images && "logoUri" in images[brand]) {
+          imgUrl = images[brand].logoUri;
         }
         return (
           <Stack
