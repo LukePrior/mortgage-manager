@@ -5,20 +5,22 @@
   "homepage": "https://lukeprior.github.io/mortgage-manager/",
   "main": "src/index.tsx",
   "dependencies": {
+    "@auth0/auth0-react": "^2.0.0",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@material-table/core": "0.2.34",
     "@mui/material": "5.8.6",
     "@mui/styles": "5.8.6",
+    "@types/auth0": "^2.35.9",
     "chart.js": "3.9.1",
     "chartjs-adapter-date-fns": "2.0.0",
     "date-fns": "2.29.2",
+    "gh-pages": "^4.0.0",
     "react": "18.2.0",
     "react-chartjs-2": "4.3.1",
     "react-dom": "18.2.0",
     "react-ga4": "1.4.1",
-    "react-scripts": "5.0.1",
-    "gh-pages": "^4.0.0"
+    "react-scripts": "5.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.14",
