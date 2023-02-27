@@ -5,7 +5,6 @@
   "homepage": "https://lukeprior.github.io/mortgage-manager/",
   "main": "src/index.tsx",
   "dependencies": {
-    "@auth0/auth0-react": "^2.0.0",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@material-table/core": "0.2.34",

@@ -25,7 +25,6 @@ import ReactGA from "react-ga4";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Avatar from '@mui/material/Avatar';
-import { useAuth0 } from "@auth0/auth0-react";
 
 ReactGA.initialize("G-4GC23VSQE8");
 ReactGA.send("pageview");
@@ -623,10 +622,6 @@ export default function App() {
       .then((actualData) => setImages(actualData));
   }, []);
 
-  const { loginWithRedirect } = useAuth0();
-  const { logout } = useAuth0();
-  const { user, isAuthenticated, isLoading } = useAuth0();
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
@@ -636,22 +631,10 @@ export default function App() {
             <Grid container item xs={10} justifyContent="flex-start">
               <h1>Mortgage Manager</h1>
             </Grid>
-            <Grid container item xs={2} justifyContent="flex-end">
-              <IconButton onClick={() => (user !== undefined && isAuthenticated) ?  logout({ logoutParams: { returnTo: window.location.href }}) : loginWithRedirect()}>
-                <Avatar 
-                  src={(user !== undefined && isAuthenticated) ? user.picture : ""}
-                  style={{
-                    margin: "1px",
-                    width: "60px",
-                    height: "60px",
-                  }} 
-                />
-              </IconButton>
-            </Grid>
           </Grid>
           <p>
             A tool to compare home loans from a wide range of Australian lenders
-            to help find the perfect mortgage to suit your needs. {(user !== undefined && isAuthenticated) ? "Hello " + user.name + "!" : ""}
+            to help find the perfect mortgage to suit your needs.
           </p>
         </Paper>
         <Paper elevation={1} sx={{ p: 1 }}>
