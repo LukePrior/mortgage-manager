@@ -2,7 +2,7 @@
 
 ## Note
 
-The data [used](https://github.com/LukePrior/open-banking-tracker) is innacurate and is pending improvements.
+The data [used](https://github.com/LukePrior/open-banking-tracker) is inaccurate and is pending improvements.
 
 ## Overview
 
