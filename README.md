@@ -1,5 +1,7 @@
 # Mortgage Manager
 
+NOTE: This is nolonger being maintained and the data is now out of date.
+
 ## Overview
 
 Mortgage Manager is an open-source online home-loan comparison tool using product data from the Consumer Data Standards Banking APIs. Authorised deposit-taking institutions are obligated to provide information on the products that they offer via a set of APIs defined by a standardised set of specifications allowing for machine processing. 
